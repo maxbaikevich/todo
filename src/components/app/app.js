@@ -15,7 +15,9 @@ export default class App extends Component {
         this.createTodoItem("drink coffee"),
         this.createTodoItem("Make Awesome App"),
         this.createTodoItem("Have a lunch")
-      ]
+      ],
+      term: "",
+      filter: "all"
     };
   }
 
@@ -77,20 +79,52 @@ export default class App extends Component {
     });
     console.log("Done", { id });
   };
+  onSearcChange = (term)=>{
+    this.setState({term})
+  }
+  onFilterChange = (filter)=>{
+    this.setState({
+      filter
+    });
+  }
+  searsh(items, term){
+    if(term.length === 0){
+      return items;
+    }
+   return items.filter((item) => {
+      return item.label.indexOf(term) > -1
+    });
+  }
+  filter(items, filter){
+    switch(filter) {
+      case'all':
+      return items;
+      case'active':
+      return items.filter((item)=> !item.done);
+      case'done':
+      return items.filter((item)=> item.done);
+      default:
+       return items;
+    }
+  }
   render() {
-    const { todoData } = this.state;
-    const doneCount = todoData.filter((el)=> el.done).length;
+    const { todoData, term, filter } = this.state;
+    const visibleItem = this.filter(this.searsh(todoData, term),filter);
+    const doneCount = todoData.filter(el => el.done).length;
     const todoCount = todoData.length - doneCount;
-    
+
     return (
       <div className="todo-app">
         <AppHeader toDo={todoCount} done={doneCount} />
         <div className="top-panel d-flex">
-          <SearchPanel />
-          <ItemStatusFilter />
+          <SearchPanel onSearcChange={this.onSearcChange} />
+          <ItemStatusFilter 
+          filter={filter} 
+          onFilterChange={this.onFilterChange}
+          />
         </div>
         <TodoList
-          todos={todoData}
+          todos={visibleItem}
           onDelited={this.deleteItem}
           onToggleImportant={this.onToggleImportant}
           onToggleDone={this.onToggleDone}
