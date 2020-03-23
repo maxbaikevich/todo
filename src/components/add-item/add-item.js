@@ -25,7 +25,7 @@ export default class AddItem extends Component {
           type="text"
           onChange={this.onLabelChange}
           placeholder="what needs to be done"
-          value={this.state.value}
+          value={this.state.label}
         />
         <button className="btn btn-outline-secondary" type="button"
         onClick = {this.onSubmit}>
